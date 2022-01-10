@@ -1,9 +1,44 @@
+* {
+    font-family:'Courier New', Courier, monospace;
+}
+
 h1 {
-    color:green;
+    color:black;
+    text-align:center;
 }
 
 body {
     background-color:beige;
 }
 p {
+}
+main {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.canvas {
+    border:10px solid black;
+    border-radius:2px;
+    box-shadow: 10px 10px 5px grey;
+    margin:none;
+    padding:none;
+    /* margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center; */
+}
+
+.buttons {
+    margin:auto;
+    margin-top:50px;
+    width:500px;
+}
+
+button {
+    width:150px;
+    height:50px;
+    background-color:black;
+    font-size:1.5em;
+    color:white;
 }
