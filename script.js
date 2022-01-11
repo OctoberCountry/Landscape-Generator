@@ -53,7 +53,11 @@ function setup() {
 
 function draw() {
     colorMode(HSL)
-    drawAlienCity()
+    //drawTest()
+    for (building of buildingArray) {
+        changeHeight(building)
+        drawBuilding(building)
+    }
 }
 
 //Main landscape types:
@@ -108,19 +112,33 @@ function drawCity() {
     drawBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
 
     for (building of buildingArray) {
+
         if (random() > 0.5) {
             drawDome(building)
         }
         else {
             drawSpire(building)
         }
+        drawWindows(building)
     }
-    drawWindows(activePalette)
+
+    drawBuildings(5, [30, 50], [100, 250], activePalette.Colors[2])
+    for (building of buildingArray) {
+
+        if (random() > 0.5) {
+            drawDome(building)
+        }
+        else {
+            drawSpire(building)
+        }
+        //drawWindows(building)
+    }
 }
 
 function drawTest() {
     buildingArray = []
     let activePalette = colorPalettes[floor(random(5))]
+    background(activePalette.Colors[4])
     createBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
     for (building of buildingArray) {
         drawBuilding(building)
@@ -184,12 +202,12 @@ function drawGrain(color) {
 
 function createBuildings(distance, wideRange, tallRange, color) {
     for (let i = 0; i < width; i = i + distance) {
+        //Sets the individual color with a slight variation in the lightness value of the passed HSL color.
         let thisColor = [color[0], color[1], random(color[2] - 3, color[2] + 3)]
         let wide = floor(random(wideRange[0], wideRange[1]))
         let tall = floor(random(tallRange[0], tallRange[1]))
-        //rect(i, height - tall, wide, tall)
         //Adding the building to an array of all buildings
-        buildingArray.push({ x: i, y: height - tall, width: wide, height: tall, color: thisColor, hasDome: false })
+        buildingArray.push({ x: i, y: height - tall, width: wide, height: tall, color: thisColor, hasDome: false, hasWindows: false })
         i = i + wide
 
     }
@@ -215,21 +233,25 @@ function drawBuildings(distance, wideRange, tallRange, color) {
 }
 //Change this to draw windows on a single building that is passed as argument + color palette
 //Add different window types
-function drawWindows(palette) {
-    let windowSize = 5
-    //rect(x, y, windowSize, windowSize)
-    for (building of buildingArray) {
+function drawWindows(building) {
+    if (!building.hasWindows) {
+        let windowSize = 5
         let cols = building.width / windowSize - 2//(wide - (windowSize * 2)) / windowSize
         let rows = building.height / windowSize - 2//(tall - (windowSize * 2)) / windowSize
         for (let i = 1; i < cols; i++) {
             for (let j = 1; j < rows; j++) {
-                stroke(palette.Colors[4])
+                stroke(building.color)
                 strokeWeight(1)
-                fill(palette.Colors[0])
+                fill("yellow")
                 rect(building.x + (i * windowSize), building.y + (j * windowSize), windowSize, windowSize)
             }
         }
+        building.hasWindows = true
     }
+}
+
+function drawHorizontalWindows() {
+
 }
 
 function drawSpire(building) {
@@ -248,4 +270,10 @@ function drawDome(building) {
         circle(building.x + building.width / 2, building.y, building.width)
         building.hasDome = true
     }
+}
+
+function changeHeight(building) {
+    let change = random(-5, 5)
+    building.height += change
+    building.y += change
 }
