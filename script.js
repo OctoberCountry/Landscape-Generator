@@ -37,6 +37,9 @@ mountainsButton.addEventListener("click", drawMountains)
 const cityButton = document.getElementById("CityButton")
 cityButton.addEventListener("click", drawCity)
 
+const testButton = document.getElementById("TestButton")
+testButton.addEventListener("click", drawTest)
+
 let buildingArray = []
 
 function setup() {
@@ -115,6 +118,15 @@ function drawCity() {
     drawWindows(activePalette)
 }
 
+function drawTest() {
+    buildingArray = []
+    let activePalette = colorPalettes[floor(random(5))]
+    createBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
+    for (building of buildingArray) {
+        drawBuilding(building)
+    }
+}
+
 //Helper drawing functions:
 
 // Change to calculate different perlin values when drawing anew
@@ -168,6 +180,24 @@ function drawGrain(color) {
         stroke(color[0], color[1], color[2], 0.3)
         point(random(width), random(height))
     }
+}
+
+function createBuildings(distance, wideRange, tallRange, color) {
+    for (let i = 0; i < width; i = i + distance) {
+        let thisColor = [color[0], color[1], random(color[2] - 3, color[2] + 3)]
+        let wide = floor(random(wideRange[0], wideRange[1]))
+        let tall = floor(random(tallRange[0], tallRange[1]))
+        //rect(i, height - tall, wide, tall)
+        //Adding the building to an array of all buildings
+        buildingArray.push({ x: i, y: height - tall, width: wide, height: tall, color: thisColor, hasDome: false })
+        i = i + wide
+
+    }
+}
+
+function drawBuilding(building) {
+    fill(building.color)
+    rect(building.x, building.y, building.width, building.height)
 }
 
 function drawBuildings(distance, wideRange, tallRange, color) {
