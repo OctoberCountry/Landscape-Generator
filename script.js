@@ -40,6 +40,8 @@ cityButton.addEventListener("click", drawCity)
 const testButton = document.getElementById("TestButton")
 testButton.addEventListener("click", drawTest)
 
+//Add a random button that mixes all styles.
+
 let buildingArray = []
 
 function setup() {
@@ -71,8 +73,9 @@ function drawAlienCity() {
     drawMoon([60, 100, 90], random(75, 125))
     drawHaze(activePalette.Colors[3])
     drawMoon([60, 100, 90], random(75, 125))
-    drawBuildings(1, [10, 20], [150, 350], activePalette.Colors[2])
+    createBuildings(1, [10, 20], [150, 350], activePalette.Colors[2])
     for (building of buildingArray) {
+        drawBuilding(building)
         drawDome(building)
     }
     drawHaze(activePalette.Colors[2])
@@ -119,7 +122,7 @@ function drawCity() {
         else {
             drawSpire(building)
         }
-        drawWindows(building)
+        drawHorizontalWindows(building)
     }
 
     drawBuildings(5, [30, 50], [100, 250], activePalette.Colors[2])
@@ -131,8 +134,14 @@ function drawCity() {
         else {
             drawSpire(building)
         }
-        //drawWindows(building)
+        drawVerticalWindows(building)
     }
+}
+
+function drawGrotto() {
+    //Stalactites (upside down buildings)
+    //Flowing water/ground
+
 }
 
 function drawTest() {
@@ -250,16 +259,46 @@ function drawWindows(building) {
     }
 }
 
-function drawHorizontalWindows() {
+function drawHorizontalWindows(building) {
+    if (!building.hasWindows) {
+        let windowSize = 5
+        let rows = building.height / windowSize - 2//(tall - (windowSize * 2)) / windowSize
+        let length = building.width - (windowSize * 2)
+        for (let j = 1; j < rows; j++) {
+            stroke(building.color)
+            strokeWeight(1)
+            fill("yellow")
+            rect(building.x + windowSize, building.y + (j * windowSize), length, windowSize)
+        }
+    }
+    building.hasWindows = true
+}
 
+function drawVerticalWindows(building) {
+    if (!building.hasWindows) {
+        let windowSize = 5
+        let cols = floor(building.width / windowSize) - 2//(tall - (windowSize * 2)) / windowSize
+        let height = building.height - (windowSize * 2)
+        let offset = ((building.width - (cols * windowSize))) / 2
+        for (let j = 0; j < cols; j++) {
+            stroke(building.color)
+            strokeWeight(1)
+            fill("yellow")
+            rect(building.x + (j * windowSize) + offset, building.y + windowSize, windowSize, height)
+        }
+    }
+    building.hasWindows = true
 }
 
 function drawSpire(building) {
-    let lineX = random(building.x, building.x + building.width)
-    strokeWeight(2)
-    stroke(building.color)
-    line(lineX, building.y, lineX, building.y - random(10, 30))
-    strokeWeight(1)
+    if (!building.hasDome) {
+        let lineX = random(building.x, building.x + building.width)
+        strokeWeight(2)
+        stroke(building.color)
+        line(lineX, building.y, lineX, building.y - random(10, 30))
+        strokeWeight(1)
+        building.hasDome = true
+    }
 }
 // Draws a dome on top of a single passed building
 // Add different dome/roof types: square pyramid, triangle
