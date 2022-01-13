@@ -55,11 +55,7 @@ function setup() {
 
 function draw() {
     colorMode(HSL)
-    //drawTest()
-    for (building of buildingArray) {
-        changeHeight(building)
-        drawBuilding(building)
-    }
+    drawAlienCity()
 }
 
 //Main landscape types:
@@ -76,16 +72,18 @@ function drawAlienCity() {
     createBuildings(1, [10, 20], [150, 350], activePalette.Colors[2])
     for (building of buildingArray) {
         drawBuilding(building)
-        drawDome(building)
+        //drawDome(building)
     }
     drawHaze(activePalette.Colors[2])
-    drawBuildings(1, [15, 25], [100, 250], activePalette.Colors[1])
+    createBuildings(1, [15, 25], [100, 250], activePalette.Colors[1])
     for (building of buildingArray) {
-        drawDome(building)
+        drawBuilding(building)
+        //drawDome(building)
     }
     drawHaze(activePalette.Colors[1])
-    drawBuildings(1, [20, 40], [50, 150], activePalette.Colors[0])
+    createBuildings(1, [20, 40], [50, 150], activePalette.Colors[0])
     for (building of buildingArray) {
+        drawBuilding(building)
         drawDome(building)
     }
     //drawHills(10, 0.005, 150, activePalette.Colors[1])
@@ -96,7 +94,9 @@ function drawMountains() {
     buildingArray = []
     let activePalette = colorPalettes[floor(random(5))]
     colorMode(HSL)
-    background(activePalette.Colors[4])
+    //background(activePalette.Colors[4])
+    drawGradient(activePalette.Colors[4], activePalette.Colors[1], "y")
+
     drawMoon([60, 100, 90], random(50, 250))
     drawHills(1, 0.001, 500, activePalette.Colors[3])
     drawHills(10, 0.005, 400, activePalette.Colors[2])
@@ -112,27 +112,40 @@ function drawCity() {
     background(activePalette.Colors[4])
     drawHaze(activePalette.Colors[3])
     drawMoon([60, 100, 90], 75)
-    drawBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
-
+    createBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
     for (building of buildingArray) {
-
-        if (random() > 0.5) {
+        drawBuilding(building)
+        let rand = random()
+        if (rand < 0.3) {
             drawDome(building)
         }
-        else {
+        else if (rand < 0.5) {
             drawSpire(building)
+        }
+        else if (rand < 0.7) {
+            drawTriangle(building)
+        }
+        else {
+            drawPyramid(building)
         }
         drawHorizontalWindows(building)
     }
+    createBuildings(5, [30, 50], [100, 250], activePalette.Colors[2])
 
-    drawBuildings(5, [30, 50], [100, 250], activePalette.Colors[2])
     for (building of buildingArray) {
-
-        if (random() > 0.5) {
+        drawBuilding(building)
+        let rand = random()
+        if (rand > 0.3) {
             drawDome(building)
         }
-        else {
+        else if (rand > 0.5) {
             drawSpire(building)
+        }
+        else if (rand > 7) {
+            drawTriangle(building)
+        }
+        else {
+            drawPyramid(building)
         }
         drawVerticalWindows(building)
     }
@@ -147,6 +160,8 @@ function drawGrotto() {
 function drawTest() {
     buildingArray = []
     let activePalette = colorPalettes[floor(random(5))]
+    background("white")
+
     background(activePalette.Colors[4])
     createBuildings(1, [20, 40], [200, 350], activePalette.Colors[1])
     for (building of buildingArray) {
@@ -164,7 +179,6 @@ function drawHills(offset, inc, horizon, color) {
         let y = noise(offset) * horizon
         line(x, height, x, height - y)
         offset = offset + inc
-        console.log("drawing perlin")
     }
 }
 
@@ -209,6 +223,24 @@ function drawGrain(color) {
     }
 }
 
+function drawGradient(color1, color2, axis = x) {
+    let c1 = color(color1[0], color1[1], color1[2])
+    let c2 = color(color2[0], color2[1], color2[2])
+    let step = 1 / width
+    if (axis === "x") {
+        for (let i = 0; i < width; i++) {
+            stroke(lerpColor(c1, c2, step * i))
+            line(i, 0, i, height)
+        }
+    }
+    if (axis === "y") {
+        for (let i = 0; i < width; i++) {
+            stroke(lerpColor(c1, c2, step * i))
+            line(0, i, width, i)
+        }
+    }
+}
+
 function createBuildings(distance, wideRange, tallRange, color) {
     for (let i = 0; i < width; i = i + distance) {
         //Sets the individual color with a slight variation in the lightness value of the passed HSL color.
@@ -224,22 +256,10 @@ function createBuildings(distance, wideRange, tallRange, color) {
 
 function drawBuilding(building) {
     fill(building.color)
+    noStroke()
     rect(building.x, building.y, building.width, building.height)
 }
 
-function drawBuildings(distance, wideRange, tallRange, color) {
-    for (let i = 0; i < width; i = i + distance) {
-        let thisColor = [color[0], color[1], random(color[2] - 3, color[2] + 3)]
-        fill(thisColor)
-        let wide = floor(random(wideRange[0], wideRange[1]))
-        let tall = floor(random(tallRange[0], tallRange[1]))
-        rect(i, height - tall, wide, tall)
-        //Adding the building to an array of all buildings
-        buildingArray.push({ x: i, y: height - tall, width: wide, height: tall, color: thisColor, hasDome: false })
-        i = i + wide
-
-    }
-}
 //Change this to draw windows on a single building that is passed as argument + color palette
 //Add different window types
 function drawWindows(building) {
@@ -266,7 +286,7 @@ function drawHorizontalWindows(building) {
         let length = building.width - (windowSize * 2)
         for (let j = 1; j < rows; j++) {
             stroke(building.color)
-            strokeWeight(1)
+            strokeWeight(3)
             fill("yellow")
             rect(building.x + windowSize, building.y + (j * windowSize), length, windowSize)
         }
@@ -282,7 +302,7 @@ function drawVerticalWindows(building) {
         let offset = ((building.width - (cols * windowSize))) / 2
         for (let j = 0; j < cols; j++) {
             stroke(building.color)
-            strokeWeight(1)
+            strokeWeight(3)
             fill("yellow")
             rect(building.x + (j * windowSize) + offset, building.y + windowSize, windowSize, height)
         }
@@ -301,12 +321,37 @@ function drawSpire(building) {
     }
 }
 // Draws a dome on top of a single passed building
-// Add different dome/roof types: square pyramid, triangle
 function drawDome(building) {
     if (!building.hasDome) {
         noStroke()
         fill(building.color)
         circle(building.x + building.width / 2, building.y, building.width)
+        building.hasDome = true
+    }
+}
+
+function drawPyramid(building) {
+    if (!building.hasDome) {
+        let stepWidth = 5
+        let stepHeight = 10
+        noStroke()
+        fill(building.color)
+        let pyrWidth = building.width - (stepWidth * 2)
+        let reps = 1
+        while (pyrWidth > 5) {
+            rect(building.x + stepWidth * reps, building.y - stepHeight * reps, pyrWidth, stepHeight)
+            pyrWidth -= 10
+            reps += 1
+        }
+        building.hasDome = true
+    }
+}
+
+function drawTriangle(building) {
+    if (!building.hasDome) {
+        noStroke()
+        fill(building.color)
+        triangle(building.x, building.y, building.x + building.width, building.y, + random(building.x, building.x + building.width), building.y - random(20, 40))
         building.hasDome = true
     }
 }
