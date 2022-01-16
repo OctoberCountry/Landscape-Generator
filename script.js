@@ -73,10 +73,10 @@ function drawAlienCity() {
     drawGrain(activePalette.Colors[4])
     //drawStars()
     let moonPos = [random(50, width - 50), random(50, 200)]
-    drawMoon([60, 100, 90], random(75, 125), moonPos)
+    drawMoon([60, 0, 90], random(75, 125), moonPos)
     //drawHaze(activePalette.Colors[3])
     moonPos = [random(50, width - 50), random(50, 200)]
-    drawMoon([60, 100, 90], random(75, 125), moonPos)
+    drawMoon([60, 0, 90], random(75, 125), moonPos)
     createBuildings([0, 5], [10, 25], [150, 350], activePalette.Colors[2])
     for (building of buildingArray) {
         drawBuilding(building)
@@ -218,16 +218,17 @@ function drawStars(weight = 3) {
 function drawMoon(color, diameter, pos) {
     //To do: Draw a textured moon of many dots inside the diameter of the moon size.
     fill((color[0], color[1], color[2]))
-    stroke(color[0], color[1], color[2] - 20)
+    noStroke()
+    //stroke(color[0], color[1], color[2])
     circle(pos[0], pos[1], diameter)
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 2000; i++) {
         let x = random(pos[0] - diameter / 2, pos[0] + diameter / 2)
         let y = random(pos[1] - diameter / 2, pos[1] + diameter / 2)
         if (insideCircle(x, y, diameter, pos)) {
-            fill((color[0], color[1], color[2] + random(-10, 5)))
+            fill(color[0], color[1], color[2] + random(-20), 0.4)
             noStroke()
-            circle(x, y, 5)
+            circle(x, y, 10)
         }
     }
 }
