@@ -1,3 +1,6 @@
+//To do
+// Use a main js file with setup and draw and a helper file with the rest
+
 const colorPalettes = [
     //All color palettes going from lighter to darker
     {
@@ -30,7 +33,7 @@ const colorPalettes = [
     }
 ]
 
-//Color idead: "Fire (oranges)", "Ice" blues, "Toxic" (purple or greenish)
+//Color idea: "Fire (oranges)", "Ice" blues, "Toxic" (purple or greenish)
 
 const alienButton = document.getElementById("AlienButton")
 alienButton.addEventListener("click", drawAlienCity)
@@ -67,21 +70,20 @@ function draw() {
 function drawAlienCity() {
     buildingArray = []
     let activePalette = colorPalettes[floor(random(colorPalettes.length))]
-    //background(activePalette.Colors[3])
     drawGradient(activePalette.Colors[4], activePalette.Colors[2], "x")
-    //drawRadialGradient(activePalette.Colors[0], activePalette.Colors[4], [width / 2, height])
     drawGrain(activePalette.Colors[4])
-    //drawStars()
+    drawStars(random(500, 2000))
     let moonPos = [random(50, width - 50), random(50, 200)]
     drawMoon([60, 0, 90], random(75, 125), moonPos)
     //drawHaze(activePalette.Colors[3])
     moonPos = [random(50, width - 50), random(50, 200)]
     drawMoon([60, 0, 90], random(75, 125), moonPos)
-    createBuildings([0, 5], [10, 25], [150, 350], activePalette.Colors[2])
-    for (building of buildingArray) {
-        drawBuilding(building)
-        drawDome(building)
-    }
+    drawHills(1, 0.01, 500, activePalette.Colors[2])
+    // createBuildings([0, 5], [10, 25], [150, 350], activePalette.Colors[2])
+    // for (building of buildingArray) {
+    //     drawBuilding(building)
+    //     drawDome(building)
+    // }
     drawHaze(activePalette.Colors[2])
     createBuildings([0, 15], [15, 35], [100, 250], activePalette.Colors[1])
     for (building of buildingArray) {
@@ -107,9 +109,9 @@ function drawMountains() {
     colorMode(HSL)
     //background(activePalette.Colors[4])
     //drawGradient(activePalette.Colors[4], activePalette.Colors[1], "y")
-    let moonPos = [random(50, width - 50), random(50, 200)]
-    drawRadialGradient(activePalette.Colors[1], activePalette.Colors[3], moonPos)
-    drawMoon([60, 100, 90], random(50, 250), moonPos)
+    let sunPos = [random(50, width - 50), random(50, 200)]
+    drawRadialGradient(activePalette.Colors[1], activePalette.Colors[3], sunPos)
+    drawSun([60, 70, 90], random(50, 250), sunPos)
     drawHills(1, 0.001, 500, activePalette.Colors[3])
     drawHills(10, 0.005, 400, activePalette.Colors[2])
     drawHills(40, 0.01, 300, activePalette.Colors[1])
@@ -122,7 +124,6 @@ function drawCity() {
     let activePalette = colorPalettes[floor(random(colorPalettes.length))]
     colorMode(HSL)
     drawGradient(activePalette.Colors[0], activePalette.Colors[2], "y")
-
     createBuildings([0, 30], [25, 40], [200, 400], activePalette.Colors[3])
     for (building of buildingArray) {
         drawBuilding(building)
@@ -198,7 +199,7 @@ function drawTest() {
 // Change to calculate different perlin values when drawing anew
 function drawHills(offset, inc, horizon, color) {
 
-    stroke(color[0], color[1], color[2])
+    stroke(color[0], color[1], color[2], 1)
     for (let x = 0; x < width; x++) {
         let y = noise(offset) * horizon
         line(x, height, x, height - y)
@@ -206,13 +207,20 @@ function drawHills(offset, inc, horizon, color) {
     }
 }
 
-function drawStars(weight = 3) {
+function drawStars(count = 1500) {
     //Drawing 2000 stars with the user set size.
-    strokeWeight(weight)
+
     stroke(262, 100, 90)
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < count; i++) {
+        strokeWeight(random(3))
         point(random(width), random(height))
     }
+}
+
+function drawSun(color, diameter, pos) {
+    fill(color[0], color[1], color[2])
+    noStroke()
+    circle(pos[0], pos[1], diameter)
 }
 
 function drawMoon(color, diameter, pos) {
@@ -221,21 +229,21 @@ function drawMoon(color, diameter, pos) {
     noStroke()
     //stroke(color[0], color[1], color[2])
     circle(pos[0], pos[1], diameter)
-
-    for (let i = 0; i < 2000; i++) {
+    let smallSize = diameter / 15
+    for (let i = 0; i < diameter * 20; i++) {
         let x = random(pos[0] - diameter / 2, pos[0] + diameter / 2)
         let y = random(pos[1] - diameter / 2, pos[1] + diameter / 2)
         if (insideCircle(x, y, diameter, pos)) {
-            fill(color[0], color[1], color[2] + random(-20), 0.4)
+            fill(color[0], color[1], color[2] + random(-15), 0.3)
             noStroke()
-            circle(x, y, 10)
+            circle(x, y, smallSize)
         }
     }
 }
 
 function insideCircle(x, y, diameter, pos) {
-    let a = Math.abs(x - pos[0]) + 3 // the 3 is the diameter of the smaller circle.
-    let b = Math.abs(y - pos[1]) + 3
+    let a = Math.abs(x - pos[0]) + ((diameter / 15) / 2) // the 3 is the diameter of the smaller circle.
+    let b = Math.abs(y - pos[1]) + ((diameter / 15) / 2)
     // let c = Math.sqrt(a ** 2 + b ** 2)
     // if (diameter > c) {
     //     //if ((diameter / 2) + (diameter / 2) > c) {
