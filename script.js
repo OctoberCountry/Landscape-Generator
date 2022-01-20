@@ -1,39 +1,56 @@
 //To do
-// Use a main js file with setup and draw and a helper file with the rest
 
 const colorPalettes = [
-    //All color palettes going from lighter to darker
     {
-        //Very hot for Alien
         Name: "LimeBlue",
+        Theme: "Toxic",
         Colors: [[73, 72, 75], [110, 50, 70], [163, 41, 52], [182, 52, 42], [199, 72, 36]]
     },
     {
         Name: "Rosy",
+        Theme: "Fire & Ice",
         Colors: [[349, 100, 90], [349, 100, 78], [349, 100, 65], [343, 79, 36], [343, 75, 20]]
     },
     {
-        //This isn't so hot
         Name: "OrangePurple",
+        Theme: "Toxic",
         Colors: [[37, 100, 50], [26, 100, 50], [273, 68, 59], [270, 73, 35], [271, 100, 14]]
     },
     {
-        //Very hot for icy mountains
         Name: "Blues",
+        Theme: "Fire & Ice",
         Colors: [[190, 77, 88], [189, 75, 75], [190, 100, 42], [201, 100, 36], [239, 94, 19]]
     },
     {
-        //Needs fixing
         Name: "Oranges",
-        Colors: [[51, 55, 82], [40, 97, 64], [31, 100, 48], [358, 97, 31], [201, 100, 14]]
+        Theme: "Fire & Ice",
+        Colors: [[51, 55, 82], [40, 97, 64], [31, 100, 48], [358, 97, 31], [201, 100, 14], [240, 100, 27]]
     },
     {
-        Name: "BlackWhite",
-        Colors: [[0, 0, 100], [0, 0, 75], [0, 0, 50], [0, 0, 25], [0, 0, 0]]
+        Name: "BoldRetro", //Salmon-violet-blue
+        Theme: "Retro",
+        Colors: [[22, 69, 69], [9, 66, 66], [304, 16, 33], [199, 35, 54], [214, 22, 48]]
+    },
+    {
+        Name: "Retro Fall",
+        Theme: "Retro",
+        Colors: [[14, 41, 47], [24, 49, 55], [43, 67, 60], [85, 18, 53], [104, 15, 44]]
+    },
+    {
+        Name: "Coffee", //White, light brown, dark brown, teal, cornflower
+        Theme: "Retro",
+        Colors: [[0, 0, 92], [26, 34, 72], [17, 36, 49], [177, 44, 40], [212, 31, 27]]
+    },
+    {
+        Name: "RetroGreenPink",
+        Theme: "Toxic",
+        Colors: [[320, 51, 50], [331, 64, 64], [64, 56, 48], [80, 59, 42], [157, 56, 33]]
     }
 ]
+//Fix: Monochrome/duochrome works best!
 
 //Color idea: "Fire (oranges)", "Ice" blues, "Toxic" (purple or greenish)
+//Let user pick between three themes containing different palettes: Retro, Fire&Ice, Toxic
 
 const alienButton = document.getElementById("AlienButton")
 alienButton.addEventListener("click", drawAlienCity)
@@ -44,8 +61,8 @@ mountainsButton.addEventListener("click", drawMountains)
 const cityButton = document.getElementById("CityButton")
 cityButton.addEventListener("click", drawCity)
 
-const testButton = document.getElementById("TestButton")
-testButton.addEventListener("click", drawTest)
+const randomButton = document.getElementById("RandomButton")
+randomButton.addEventListener("click", drawRandom)
 
 //Add a random button that mixes all styles.
 
@@ -69,62 +86,71 @@ function draw() {
 
 function drawAlienCity() {
     buildingArray = []
-    let activePalette = colorPalettes[floor(random(colorPalettes.length))]
-    drawGradient(activePalette.Colors[4], activePalette.Colors[2], "x")
-    drawGrain(activePalette.Colors[4])
+    let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
+    // if (random() < 0.2) {
+    //     activePalette = activePalette.reverse()
+    // }
+    drawGradient(activePalette[4], activePalette[2], "x")
+    drawGrain(activePalette[4])
     drawStars(random(500, 2000))
     let moonPos = [random(50, width - 50), random(50, 200)]
     drawMoon([60, 0, 90], random(75, 125), moonPos)
-    //drawHaze(activePalette.Colors[3])
     moonPos = [random(50, width - 50), random(50, 200)]
     drawMoon([60, 0, 90], random(75, 125), moonPos)
-    drawHills(1, 0.01, 500, activePalette.Colors[2])
+    drawHills(random(100), 0.005, 400, activePalette[2])
     // createBuildings([0, 5], [10, 25], [150, 350], activePalette.Colors[2])
     // for (building of buildingArray) {
     //     drawBuilding(building)
     //     drawDome(building)
     // }
-    drawHaze(activePalette.Colors[2])
-    createBuildings([0, 15], [15, 35], [100, 250], activePalette.Colors[1])
+    drawHaze(activePalette[2])
+    createBuildings([0, 15], [15, 35], [100, 250], activePalette[1])
     for (building of buildingArray) {
         drawBuilding(building)
         drawDome(building)
 
     }
     let length = buildingArray.length
-    drawHaze(activePalette.Colors[1])
-    createBuildings([15, 50], [30, 60], [50, 150], activePalette.Colors[0])
+    drawHaze(activePalette[1])
+    createBuildings([15, 50], [30, 60], [50, 150], activePalette[0])
     for (let i = length; i < buildingArray.length; i++) {//building of buildingArray) {
         drawBuilding(buildingArray[i])
         drawDome(buildingArray[i])
-        drawEye(buildingArray[i], activePalette.Colors[2], activePalette.Colors[3])
+        drawEye(buildingArray[i], activePalette[2], activePalette[3])
     }
-    drawHills(10, 0.003, 100, activePalette.Colors[0])
+    drawHills(random(100), 0.003, 100, activePalette[0])
 }
 
 function drawMountains() {
     //Drawing a mountainscape
     buildingArray = []
-    let activePalette = colorPalettes[floor(random(colorPalettes.length))]
+    let retroPalette = colorPalettes.filter(x => x.Theme !== "Toxic")
+    console.log(retroPalette)
+    let activePalette = retroPalette[floor(random(retroPalette.length))].Colors
     colorMode(HSL)
-    //background(activePalette.Colors[4])
-    //drawGradient(activePalette.Colors[4], activePalette.Colors[1], "y")
+    //background(activePalette[4])
+    //drawGradient(activePalette[4], activePalette[1], "y")
     let sunPos = [random(50, width - 50), random(50, 200)]
-    drawRadialGradient(activePalette.Colors[1], activePalette.Colors[3], sunPos)
+    drawRadialGradient(activePalette[0], activePalette[1], sunPos)
     drawSun([60, 70, 90], random(50, 250), sunPos)
-    drawHills(1, 0.001, 500, activePalette.Colors[3])
-    drawHills(10, 0.005, 400, activePalette.Colors[2])
-    drawHills(40, 0.01, 300, activePalette.Colors[1])
-    drawHills(300, 0.02, 200, activePalette.Colors[0])
+    // drawHills(random(10000), 0.001, 500, activePalette[1])
+    // drawHills(random(10000), 0.005, 400, activePalette[2])
+    // drawHills(random(10000), 0.01, 300, activePalette[3])
+    // drawHills(random(10000), 0.02, 200, activePalette[4])
+    drawHills(random(10000), random(0.001, 0.015), 500, activePalette[1])
+    drawHills(random(10000), random(0.001, 0.015), 400, activePalette[2])
+    drawHills(random(10000), random(0.001, 0.015), 300, activePalette[3])
+    drawHills(random(10000), random(0.001, 0.015), 200, activePalette[4])
 }
 
 function drawCity() {
     //Drawing a futuristic skyscraper skyline
     buildingArray = []
-    let activePalette = colorPalettes[floor(random(colorPalettes.length))]
+    let cityPalette = colorPalettes.filter(x => x.Theme !== "Retro")
+    let activePalette = cityPalette[floor(random(cityPalette.length))].Colors
     colorMode(HSL)
-    drawGradient(activePalette.Colors[0], activePalette.Colors[2], "y")
-    createBuildings([0, 30], [25, 40], [200, 400], activePalette.Colors[3])
+    drawGradient(activePalette[0], activePalette[2], "y")
+    createBuildings([0, 30], [25, 40], [200, 400], activePalette[3])
     for (building of buildingArray) {
         drawBuilding(building)
         let rand = random()
@@ -146,9 +172,9 @@ function drawCity() {
         }
 
     }
-    drawHaze(activePalette.Colors[1])
-    drawHaze(activePalette.Colors[4])
-    createBuildings([0, 0], [40, 60], [50, 250], activePalette.Colors[4])
+    drawHaze(activePalette[1])
+    drawHaze(activePalette[4])
+    createBuildings([0, 0], [40, 60], [50, 250], activePalette[4])
 
     for (building of buildingArray) {
         drawBuilding(building)
@@ -171,7 +197,7 @@ function drawCity() {
         }
     }
 
-    // fill(activePalette.Colors[0])
+    // fill(activePalette[0])
     // rect(0, height - 30, width, 30)
 }
 
@@ -181,17 +207,22 @@ function drawGrotto() {
 
 }
 
-function drawTest() {
+function drawRandom() {
     buildingArray = []
-    let activePalette = colorPalettes[floor(random(colorPalettes.length))]
-    background("white")
-    drawRadialGradient(activePalette.Colors[0], activePalette.Colors[3])
+    let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
+    drawColors(activePalette)
+    ///Create a random background
 
-    //background(activePalette.Colors[4])
-    createBuildings([0, 5], [20, 40], [200, 350], activePalette.Colors[1])
-    for (building of buildingArray) {
-        drawBuilding(building)
-    }
+    // Create a number of random layers - hills or buildings
+    // If buildings, determine roofs and windows for each
+
+
+    // drawRadialGradient(activePalette.Colors[0], activePalette.Colors[3])
+    // createBuildings([0, 5], [20, 40], [200, 350], activePalette.Colors[1])
+    // for (building of buildingArray) {
+    //     drawBuilding(building)
+    // }
+
 }
 
 //Helper drawing functions:
@@ -453,5 +484,13 @@ function drawEye(building, color1, color2) {
         fill(color2)
         circle(building.x + building.width / 2, building.y, building.width * 0.4)
         building.hasDome = true
+    }
+}
+
+function drawColors(palette) {
+    noStroke()
+    for (let i = 0; i < 5; i++) {
+        fill(palette[i])
+        rect(0, (height / 5) * i, width, height)
     }
 }
