@@ -1,5 +1,3 @@
-//To do
-
 const colorPalettes = [
     {
         Name: "LimeBlue",
@@ -45,9 +43,13 @@ const colorPalettes = [
         Name: "RetroGreenPink",
         Theme: "Toxic",
         Colors: [[320, 51, 50], [331, 64, 64], [64, 56, 48], [80, 59, 42], [157, 56, 33]]
+    },
+    {
+        Name: "Toxic green",
+        Theme: "Toxic",
+        Colors: [[60, 97, 60], [75, 70, 52], [79, 71, 48], [154, 100, 54], [169, 95, 43]]
     }
 ]
-//Fix: Monochrome/duochrome works best!
 
 //Color idea: "Fire (oranges)", "Ice" blues, "Toxic" (purple or greenish)
 //Let user pick between three themes containing different palettes: Retro, Fire&Ice, Toxic
@@ -61,20 +63,13 @@ mountainsButton.addEventListener("click", drawMountains)
 const cityButton = document.getElementById("CityButton")
 cityButton.addEventListener("click", drawCity)
 
-const randomButton = document.getElementById("RandomButton")
-randomButton.addEventListener("click", drawRandom)
-
-//Add a random button that mixes all styles.
-
 let buildingArray = []
 
 function setup() {
     createCanvas(800, 500)
-    let myCanvas = document.getElementsByTagName("canvas")
+    document.getElementsByTagName("canvas")
     canvas.classList.add("canvas")
-
     noLoop()
-
 }
 
 function draw() {
@@ -85,97 +80,71 @@ function draw() {
 //Main landscape types:
 
 function drawAlienCity() {
+    background("white")
     buildingArray = []
     let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
-    // if (random() < 0.2) {
-    //     activePalette = activePalette.reverse()
-    // }
     drawGradient(activePalette[4], activePalette[2], "x")
     drawGrain(activePalette[4])
     drawStars(random(500, 2000))
-    let moonPos = [random(50, width - 50), random(50, 200)]
-    drawMoon([60, 0, 90], random(75, 125), moonPos)
-    moonPos = [random(50, width - 50), random(50, 200)]
-    drawMoon([60, 0, 90], random(75, 125), moonPos)
-    drawHills(random(100), 0.005, 400, activePalette[2])
-    // createBuildings([0, 5], [10, 25], [150, 350], activePalette.Colors[2])
-    // for (building of buildingArray) {
-    //     drawBuilding(building)
-    //     drawDome(building)
-    // }
+    //Draw a random number of moons from 1-3
+    let moonCount = random(3)
+    for (let i = 0; i < moonCount; i++) {
+        let moonPos = [random(50, width - 50), random(50, 300)]
+        drawMoon([60, 0, 90], random(75, 125), moonPos)
+    }
+    //Draw a random number of layers (hills or buildings).
+    let layerCount = floor(random(1, 6))
+    for (let i = 1; i < layerCount; i++) {
+        if (random() < 0.4) {
+            drawHills(random(100), 0.003, 400 / i, activePalette[i - 1])
+        }
+        else {
+            createBuildings([0, 50 / i], [50 / i, 70 / i], [100 / i, 250 / i], activePalette[i - 1])
+
+        }
+    }
     drawHaze(activePalette[2])
-    createBuildings([0, 15], [15, 35], [100, 250], activePalette[1])
     for (building of buildingArray) {
         drawBuilding(building)
         drawDome(building)
+        drawEye(building, activePalette[2], activePalette[3])
 
     }
-    let length = buildingArray.length
     drawHaze(activePalette[1])
-    createBuildings([15, 50], [30, 60], [50, 150], activePalette[0])
-    for (let i = length; i < buildingArray.length; i++) {//building of buildingArray) {
-        drawBuilding(buildingArray[i])
-        drawDome(buildingArray[i])
-        drawEye(buildingArray[i], activePalette[2], activePalette[3])
-    }
-    drawHills(random(100), 0.003, 100, activePalette[0])
 }
 
 function drawMountains() {
     //Drawing a mountainscape
+    background("white")
     buildingArray = []
     let retroPalette = colorPalettes.filter(x => x.Theme !== "Toxic")
-    console.log(retroPalette)
     let activePalette = retroPalette[floor(random(retroPalette.length))].Colors
-    colorMode(HSL)
-    //background(activePalette[4])
-    //drawGradient(activePalette[4], activePalette[1], "y")
     let sunPos = [random(50, width - 50), random(50, 200)]
+    //background(activePalette[1])
     drawRadialGradient(activePalette[0], activePalette[1], sunPos)
     drawSun([60, 70, 90], random(50, 250), sunPos)
-    // drawHills(random(10000), 0.001, 500, activePalette[1])
-    // drawHills(random(10000), 0.005, 400, activePalette[2])
-    // drawHills(random(10000), 0.01, 300, activePalette[3])
-    // drawHills(random(10000), 0.02, 200, activePalette[4])
-    drawHills(random(10000), random(0.001, 0.015), 500, activePalette[1])
-    drawHills(random(10000), random(0.001, 0.015), 400, activePalette[2])
-    drawHills(random(10000), random(0.001, 0.015), 300, activePalette[3])
-    drawHills(random(10000), random(0.001, 0.015), 200, activePalette[4])
+    let layerCount = floor(random(1, 6))
+    for (let i = 1; i < layerCount; i++) {
+        drawHills(random(10000), random(0.001, 0.015), 500 / i, activePalette[i])
+    }
 }
 
 function drawCity() {
-    //Drawing a futuristic skyscraper skyline
+    //Drawing a skyscraper skyline
+    background("white")
     buildingArray = []
     let cityPalette = colorPalettes.filter(x => x.Theme !== "Retro")
     let activePalette = cityPalette[floor(random(cityPalette.length))].Colors
-    colorMode(HSL)
     drawGradient(activePalette[0], activePalette[2], "y")
-    createBuildings([0, 30], [25, 40], [200, 400], activePalette[3])
-    for (building of buildingArray) {
-        drawBuilding(building)
-        let rand = random()
-        if (rand < 0.3) {
-            drawDome(building)
-            drawHorizontalWindows(building)
-        }
-        else if (rand < 0.5) {
-            drawSpire(building)
-            drawVerticalWindows(building)
-        }
-        else if (rand < 0.7) {
-            drawTriangle(building)
-            drawWindows(building)
-        }
-        else {
-            drawPyramid(building)
-            drawWindows(building)
-        }
-
+    if (random() < 0.5) {
+        let moonPos = [random(50, width - 50), random(50, 300)]
+        drawSun([60, 0, 90], random(75, 125), moonPos)
+    }
+    let layerCount = floor(random(2, 5))
+    for (let i = 1; i <= layerCount; i++) {
+        createBuildings([0, 50 / i], [25, 40], [150 / i, 350 / i], activePalette[i])
     }
     drawHaze(activePalette[1])
-    drawHaze(activePalette[4])
-    createBuildings([0, 0], [40, 60], [50, 250], activePalette[4])
-
     for (building of buildingArray) {
         drawBuilding(building)
         let rand = random()
@@ -196,38 +165,13 @@ function drawCity() {
             drawWindows(building)
         }
     }
+    drawBase(activePalette[layerCount])
 
-    // fill(activePalette[0])
-    // rect(0, height - 30, width, 30)
-}
-
-function drawGrotto() {
-    //Stalactites (upside down buildings)
-    //Flowing water/ground
-
-}
-
-function drawRandom() {
-    buildingArray = []
-    let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
-    drawColors(activePalette)
-    ///Create a random background
-
-    // Create a number of random layers - hills or buildings
-    // If buildings, determine roofs and windows for each
-
-
-    // drawRadialGradient(activePalette.Colors[0], activePalette.Colors[3])
-    // createBuildings([0, 5], [20, 40], [200, 350], activePalette.Colors[1])
-    // for (building of buildingArray) {
-    //     drawBuilding(building)
-    // }
-
+    drawHaze(activePalette[4])
 }
 
 //Helper drawing functions:
 
-// Change to calculate different perlin values when drawing anew
 function drawHills(offset, inc, horizon, color) {
 
     stroke(color[0], color[1], color[2], 1)
@@ -239,8 +183,6 @@ function drawHills(offset, inc, horizon, color) {
 }
 
 function drawStars(count = 1500) {
-    //Drawing 2000 stars with the user set size.
-
     stroke(262, 100, 90)
     for (let i = 0; i < count; i++) {
         strokeWeight(random(3))
@@ -255,52 +197,49 @@ function drawSun(color, diameter, pos) {
 }
 
 function drawMoon(color, diameter, pos) {
-    //To do: Draw a textured moon of many dots inside the diameter of the moon size.
+    drawShine(diameter, pos)
     fill((color[0], color[1], color[2]))
     noStroke()
-    //stroke(color[0], color[1], color[2])
     circle(pos[0], pos[1], diameter)
     let smallSize = diameter / 15
     for (let i = 0; i < diameter * 20; i++) {
         let x = random(pos[0] - diameter / 2, pos[0] + diameter / 2)
         let y = random(pos[1] - diameter / 2, pos[1] + diameter / 2)
         if (insideCircle(x, y, diameter, pos)) {
-            fill(color[0], color[1], color[2] + random(-15), 0.3)
+            fill(color[0], color[1], color[2] + random(-10), 0.3)
             noStroke()
             circle(x, y, smallSize)
         }
     }
 }
 
+function drawShine(diameter, pos) {
+    let c1 = color(255, 255, 255, 100)
+    let c2 = color(255, 255, 255, 0)
+    let step = 1 / (diameter * 2)
+    noFill()
+    for (let i = 0; i < diameter * 2; i++) {
+        stroke(lerpColor(c1, c2, step * i))
+        circle(pos[0], pos[1], i)
+    }
+}
+
 function insideCircle(x, y, diameter, pos) {
     let a = Math.abs(x - pos[0]) + ((diameter / 15) / 2) // the 3 is the diameter of the smaller circle.
     let b = Math.abs(y - pos[1]) + ((diameter / 15) / 2)
-    // let c = Math.sqrt(a ** 2 + b ** 2)
-    // if (diameter > c) {
-    //     //if ((diameter / 2) + (diameter / 2) > c) {
-    //     return true
-    // }
-    // else {
-    //     return false
-    // }
     if ((a ** 2 + b ** 2) < (diameter / 2) ** 2) {
         return true
     }
     else {
         return false
     }
-    //     (x - center_x)² + (y - center_y)² < radius²
 }
 
 function drawHaze(color) {
-
     strokeWeight(3)
     strokeCap(ROUND)
-    //rect(0, 0, width, height)
-    //stroke(262, 100, 90, 10)
     for (let i = 0; i < 500; i++) {
         stroke(color[0], color[1] - random(5), color[2] - random(5), 0.1)
-        //point(random(width), random(height))
         let x1 = random(-100, width + 100)
         let x2 = x1 + random(30, 200)
         let y = random(height)
@@ -339,7 +278,7 @@ function drawRadialGradient(color1, color2, pos = [400, 250]) {
     let c2 = color(color2[0], color2[1], color2[2])
     let x, y
     x = Math.abs(pos[0] - width / 2) + width / 2
-    y = Math.abs(pos[0] - height / 2) + height / 2
+    y = Math.abs(pos[1] - height / 2) + height / 2
     let c = Math.sqrt(x ** 2 + y ** 2)
     let step = 1 / c
     noFill()
@@ -359,7 +298,6 @@ function createBuildings(distanceRange, wideRange, tallRange, color) {
         //Adding the building to an array of all buildings
         buildingArray.push({ x: i, y: height - tall, width: wide, height: tall, color: thisColor, hasDome: false, hasWindows: false, drawn: false })
         i = i + wide + distance
-
     }
 }
 
@@ -372,13 +310,21 @@ function drawBuilding(building) {
     }
 }
 
-//Change this to draw windows on a single building that is passed as argument + color palette
-//Add different window types
+function drawBase(color) {
+    for (let i = 0; i < 10; i++) {
+        let blockHeight = random(5, 25)
+        let blockWidth = width / 10
+        fill(color)
+        noStroke()
+        rect(i * blockWidth, height - blockHeight, blockWidth, blockHeight)
+    }
+}
+
 function drawWindows(building) {
     if (!building.hasWindows) {
         let windowSize = 5
-        let cols = building.width / windowSize - 2//(wide - (windowSize * 2)) / windowSize
-        let rows = building.height / windowSize - 2//(tall - (windowSize * 2)) / windowSize
+        let cols = building.width / windowSize - 2
+        let rows = building.height / windowSize - 2
         for (let i = 1; i < cols; i++) {
             for (let j = 1; j < rows; j++) {
                 if (random() > 0.5) {
@@ -396,7 +342,7 @@ function drawWindows(building) {
 function drawHorizontalWindows(building) {
     if (!building.hasWindows) {
         let windowSize = 5
-        let rows = building.height / windowSize - 2//(tall - (windowSize * 2)) / windowSize
+        let rows = building.height / windowSize - 2
         let length = building.width - (windowSize * 2)
         for (let j = 1; j < rows; j++) {
             stroke(building.color)
@@ -411,7 +357,7 @@ function drawHorizontalWindows(building) {
 function drawVerticalWindows(building) {
     if (!building.hasWindows) {
         let windowSize = 5
-        let cols = floor(building.width / windowSize) - 2//(tall - (windowSize * 2)) / windowSize
+        let cols = floor(building.width / windowSize) - 2
         let height = building.height - (windowSize * 2)
         let offset = ((building.width - (cols * windowSize))) / 2
         for (let j = 0; j < cols; j++) {
@@ -434,7 +380,7 @@ function drawSpire(building) {
         building.hasDome = true
     }
 }
-// Draws a dome on top of a single passed building
+
 function drawDome(building) {
     if (!building.hasDome) {
         noStroke()
@@ -493,4 +439,10 @@ function drawColors(palette) {
         fill(palette[i])
         rect(0, (height / 5) * i, width, height)
     }
+}
+
+function drawRandom() {
+    buildingArray = []
+    let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
+    drawColors(activePalette)
 }
