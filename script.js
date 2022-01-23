@@ -84,7 +84,9 @@ function drawAlienCity() {
     buildingArray = []
     let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
     drawGradient(activePalette[4], activePalette[2], "x")
-    drawGrain(activePalette[4])
+    if (random() < 0.7) {
+        drawGrain(activePalette[4])
+    }
     drawStars(random(500, 2000))
     //Draw a random number of moons from 1-3
     let moonCount = random(3)
@@ -103,14 +105,18 @@ function drawAlienCity() {
 
         }
     }
-    drawHaze(activePalette[2])
+    if (random() < 0.7) {
+        drawHaze(activePalette[2])
+    }
     for (building of buildingArray) {
         drawBuilding(building)
         drawDome(building)
-        drawEye(building, activePalette[2], activePalette[3])
+        drawEye(building, activePalette[3], activePalette[4])
 
     }
-    drawHaze(activePalette[1])
+    if (random() < 0.7) {
+        drawHaze(activePalette[1])
+    }
 }
 
 function drawMountains() {
@@ -144,7 +150,9 @@ function drawCity() {
     for (let i = 1; i <= layerCount; i++) {
         createBuildings([0, 50 / i], [25, 40], [150 / i, 350 / i], activePalette[i])
     }
-    drawHaze(activePalette[1])
+    if (random() < 0.7) {
+        drawHaze(activePalette[1])
+    }
     for (building of buildingArray) {
         drawBuilding(building)
         let rand = random()
@@ -166,14 +174,15 @@ function drawCity() {
         }
     }
     drawBase(activePalette[layerCount])
-
-    drawHaze(activePalette[4])
+    if (random() < 0.7) {
+        drawHaze(activePalette[4])
+    }
 }
 
 //Helper drawing functions:
 
 function drawHills(offset, inc, horizon, color) {
-
+    //Offset sets the "beginning" of the perlin noise graph, inc is the increment value, or jaggedness of the hill/mountain.
     stroke(color[0], color[1], color[2], 1)
     for (let x = 0; x < width; x++) {
         let y = noise(offset) * horizon
