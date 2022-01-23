@@ -51,9 +51,8 @@ const colorPalettes = [
     }
 ]
 
-//Color idea: "Fire (oranges)", "Ice" blues, "Toxic" (purple or greenish)
-//Let user pick between three themes containing different palettes: Retro, Fire&Ice, Toxic
 
+//Setting up the buttons
 const alienButton = document.getElementById("AlienButton")
 alienButton.addEventListener("click", drawAlienCity)
 
@@ -67,14 +66,12 @@ let buildingArray = []
 
 function setup() {
     createCanvas(800, 500)
-    document.getElementsByTagName("canvas")
-    canvas.classList.add("canvas")
     noLoop()
 }
 
 function draw() {
     colorMode(HSL)
-    drawAlienCity()
+    drawMountains()
 }
 
 //Main landscape types:
@@ -82,6 +79,7 @@ function draw() {
 function drawAlienCity() {
     background("white")
     buildingArray = []
+    //The alien landscape can be any color
     let activePalette = colorPalettes[floor(random(colorPalettes.length))].Colors
     drawGradient(activePalette[4], activePalette[2], "x")
     if (random() < 0.7) {
@@ -111,7 +109,9 @@ function drawAlienCity() {
     for (building of buildingArray) {
         drawBuilding(building)
         drawDome(building)
-        drawEye(building, activePalette[3], activePalette[4])
+        if (random() > 0.25) {
+            drawEye(building, activePalette[3], activePalette[4])
+        }
 
     }
     if (random() < 0.7) {
@@ -123,12 +123,15 @@ function drawMountains() {
     //Drawing a mountainscape
     background("white")
     buildingArray = []
+    //Mountains can be any color except toxic
     let retroPalette = colorPalettes.filter(x => x.Theme !== "Toxic")
     let activePalette = retroPalette[floor(random(retroPalette.length))].Colors
     let sunPos = [random(50, width - 50), random(50, 200)]
-    //background(activePalette[1])
     drawRadialGradient(activePalette[0], activePalette[1], sunPos)
     drawSun([60, 70, 90], random(50, 250), sunPos)
+    if (random() < 0.4) {
+        drawHaze(activePalette[3])
+    }
     let layerCount = floor(random(1, 6))
     for (let i = 1; i < layerCount; i++) {
         drawHills(random(10000), random(0.001, 0.015), 500 / i, activePalette[i])
@@ -139,9 +142,18 @@ function drawCity() {
     //Drawing a skyscraper skyline
     background("white")
     buildingArray = []
+    //The city can be any color except retro
     let cityPalette = colorPalettes.filter(x => x.Theme !== "Retro")
     let activePalette = cityPalette[floor(random(cityPalette.length))].Colors
-    drawGradient(activePalette[0], activePalette[2], "y")
+    if (random() < 0.8) {
+        drawGradient(activePalette[0], activePalette[2], "y")
+    }
+    else {
+        background(activePalette[0])
+    }
+    if (random() < 0.2) {
+        drawStars()
+    }
     if (random() < 0.5) {
         let moonPos = [random(50, width - 50), random(50, 300)]
         drawSun([60, 0, 90], random(75, 125), moonPos)
@@ -179,90 +191,7 @@ function drawCity() {
     }
 }
 
-//Helper drawing functions:
-
-function drawHills(offset, inc, horizon, color) {
-    //Offset sets the "beginning" of the perlin noise graph, inc is the increment value, or jaggedness of the hill/mountain.
-    stroke(color[0], color[1], color[2], 1)
-    for (let x = 0; x < width; x++) {
-        let y = noise(offset) * horizon
-        line(x, height, x, height - y)
-        offset = offset + inc
-    }
-}
-
-function drawStars(count = 1500) {
-    stroke(262, 100, 90)
-    for (let i = 0; i < count; i++) {
-        strokeWeight(random(3))
-        point(random(width), random(height))
-    }
-}
-
-function drawSun(color, diameter, pos) {
-    fill(color[0], color[1], color[2])
-    noStroke()
-    circle(pos[0], pos[1], diameter)
-}
-
-function drawMoon(color, diameter, pos) {
-    drawShine(diameter, pos)
-    fill((color[0], color[1], color[2]))
-    noStroke()
-    circle(pos[0], pos[1], diameter)
-    let smallSize = diameter / 15
-    for (let i = 0; i < diameter * 20; i++) {
-        let x = random(pos[0] - diameter / 2, pos[0] + diameter / 2)
-        let y = random(pos[1] - diameter / 2, pos[1] + diameter / 2)
-        if (insideCircle(x, y, diameter, pos)) {
-            fill(color[0], color[1], color[2] + random(-10), 0.3)
-            noStroke()
-            circle(x, y, smallSize)
-        }
-    }
-}
-
-function drawShine(diameter, pos) {
-    let c1 = color(255, 255, 255, 100)
-    let c2 = color(255, 255, 255, 0)
-    let step = 1 / (diameter * 2)
-    noFill()
-    for (let i = 0; i < diameter * 2; i++) {
-        stroke(lerpColor(c1, c2, step * i))
-        circle(pos[0], pos[1], i)
-    }
-}
-
-function insideCircle(x, y, diameter, pos) {
-    let a = Math.abs(x - pos[0]) + ((diameter / 15) / 2) // the 3 is the diameter of the smaller circle.
-    let b = Math.abs(y - pos[1]) + ((diameter / 15) / 2)
-    if ((a ** 2 + b ** 2) < (diameter / 2) ** 2) {
-        return true
-    }
-    else {
-        return false
-    }
-}
-
-function drawHaze(color) {
-    strokeWeight(3)
-    strokeCap(ROUND)
-    for (let i = 0; i < 500; i++) {
-        stroke(color[0], color[1] - random(5), color[2] - random(5), 0.1)
-        let x1 = random(-100, width + 100)
-        let x2 = x1 + random(30, 200)
-        let y = random(height)
-        line(x1, y, x2, y)
-    }
-}
-
-function drawGrain(color) {
-    strokeWeight(10)
-    for (let i = 0; i < 25000; i++) {
-        stroke(color[0], color[1], color[2], 0.3)
-        point(random(width), random(height))
-    }
-}
+//Helper drawing functions for the sky, hills/mountains and buildings+ornaments:
 
 function drawGradient(color1, color2, axis = x) {
     let c1 = color(color1[0], color1[1], color1[2])
@@ -294,6 +223,90 @@ function drawRadialGradient(color1, color2, pos = [400, 250]) {
     for (let i = 0; i < c * 2; i++) {
         stroke(lerpColor(c1, c2, step * i))
         circle(pos[0], pos[1], i)
+    }
+}
+
+function drawHaze(color) {
+    strokeWeight(3)
+    strokeCap(ROUND)
+    for (let i = 0; i < 500; i++) {
+        stroke(color[0], color[1] - random(5), color[2] - random(5), 0.1)
+        let x1 = random(-100, width + 100)
+        let x2 = x1 + random(30, 200)
+        let y = random(height)
+        line(x1, y, x2, y)
+    }
+}
+
+function drawGrain(color) {
+    strokeWeight(10)
+    for (let i = 0; i < 25000; i++) {
+        stroke(color[0], color[1], color[2], 0.3)
+        point(random(width), random(height))
+    }
+}
+
+function drawStars(count = 1500) {
+    stroke(262, 100, 90)
+    for (let i = 0; i < count; i++) {
+        strokeWeight(random(3))
+        point(random(width), random(height))
+    }
+}
+
+function drawSun(color, diameter, pos) {
+    fill(color[0], color[1], color[2])
+    noStroke()
+    circle(pos[0], pos[1], diameter)
+}
+
+function drawMoon(color, diameter, pos) {
+    //Draw a large circle with many small "craters" inside
+    drawShine(diameter, pos)
+    fill((color[0], color[1], color[2]))
+    noStroke()
+    circle(pos[0], pos[1], diameter)
+    let smallSize = diameter / 15
+    for (let i = 0; i < diameter * 20; i++) {
+        let x = random(pos[0] - diameter / 2, pos[0] + diameter / 2)
+        let y = random(pos[1] - diameter / 2, pos[1] + diameter / 2)
+        if (insideCircle(x, y, diameter, pos)) {
+            fill(color[0], color[1], color[2] + random(-10), 0.3)
+            noStroke()
+            circle(x, y, smallSize)
+        }
+    }
+}
+
+function drawShine(diameter, pos) {
+    let c1 = color(255, 255, 255, 100)
+    let c2 = color(255, 255, 255, 0)
+    let step = 1 / (diameter * 2)
+    noFill()
+    for (let i = 0; i < diameter * 2; i++) {
+        stroke(lerpColor(c1, c2, step * i))
+        circle(pos[0], pos[1], i)
+    }
+}
+
+function insideCircle(x, y, diameter, pos) {
+    let a = Math.abs(x - pos[0]) + ((diameter / 15) / 2)
+    let b = Math.abs(y - pos[1]) + ((diameter / 15) / 2)
+    if ((a ** 2 + b ** 2) < (diameter / 2) ** 2) {
+        return true
+    }
+    else {
+        return false
+    }
+}
+
+function drawHills(offset, inc, horizon, color) {
+    //Offset sets the "beginning" of the perlin noise graph, inc is the increment value, or jaggedness of the hill/mountain.
+    stroke(color[0], color[1], color[2], 1)
+    for (let x = 0; x < width; x++) {
+        let y = noise(offset) * horizon
+        line(x, height, x, height - y)
+        offset = offset + inc
     }
 }
 
@@ -442,6 +455,7 @@ function drawEye(building, color1, color2) {
     }
 }
 
+//Unused functions to view color palettes on the same screen.
 function drawColors(palette) {
     noStroke()
     for (let i = 0; i < 5; i++) {

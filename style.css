@@ -17,16 +17,12 @@ main {
     align-items:center;
     justify-content:center;
 }
-.canvas {
+.p5Canvas {
     border:10px solid black;
     border-radius:2px;
     box-shadow: 10px 10px 5px grey;
     margin:none;
     padding:none;
-    /* margin:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center; */
 }
 
 .buttons {
